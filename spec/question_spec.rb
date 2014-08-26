@@ -15,7 +15,7 @@ describe Question do
     expect(test_question.choices).to eq [test_choice1, test_choice2]
   end
 
-  # it 'has many responses through choices' do
+  # it 'has many responses through a question' do
   #   test_question = Question.create({:name => 'What is the coolest animal?'})
   #   test_choice1 = Choice.create({:name => 'Elephant'})
   #   test_choice2 = Choice.create({:name => 'Capybara'})

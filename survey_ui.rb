@@ -1,6 +1,8 @@
 require 'active_record'
 require './lib/question'
 require './lib/survey'
+require './lib/choice'
+require './lib/response'
 require 'pry'
 
 
@@ -88,7 +90,48 @@ def add_questions
   puts "What question would you like to add to this survey?"
   question_choice = gets.chomp
   question = Question.create({:name => question_choice, :survey_id => selected_survey.id})
-  survey_menu
+  add_choices
+end
+
+def add_choices
+  puts "Put 'add' to add choices or 'x' to return to survey menu."
+  choice = gets.chomp
+  if choice == 'x'
+    survey_menu
+  elsif choice == 'add'
+    puts "Here are all your surveys:"
+    surveys = Survey.all
+    surveys.each {|survey| puts survey.name}
+    puts "What survey would you like to edit?"
+    survey_choice = gets.chomp
+    selected_survey = Survey.where({:name => survey_choice}).first
+
+    puts "Here are all your questions:"
+    # questions = Question.where({:survey_id => selected_survey.id}).first
+    selected_survey.questions
+    selected_survey.questions.each do |question|
+      puts question.name
+    end
+    puts "What question would you like to add choices to?"
+    question_choice = gets.chomp
+    @selected_question = Question.where({:name => question_choice}).first
+    puts "What choice would you like to add?"
+    user_choice = gets.chomp
+    new_choice = Choice.create({:name => user_choice, :question_id => @selected_question.id})
+    loop do
+      puts "Would you like to 'add' another choice to this question or 'return' to survey menu?"
+      response = gets.chomp
+      if response == 'return'
+        survey_menu
+      elsif response == 'add'
+        puts "What choice would you like to add?"
+      user_choice = gets.chomp
+      new_choice = Choice.create({:name => user_choice, :question_id => @selected_question.id})
+      end
+    end
+  else
+    puts "Try again sir/madam."
+  end
 end
 
 def view_survey
@@ -103,7 +146,21 @@ def view_survey
   selected_survey.questions.each do |question|
     puts question.name
   end
-  survey_menu
+  puts "Would you like to view your question choices, 'yes' or 'no'?"
+  choice = gets.chomp
+  if choice == 'yes'
+    puts "What question would you like to examine?"
+    response = gets.chomp
+    question = Question.where({:name => response}).first
+    # choices = Choice.where(:question_id => question).first
+    # ******
+    question.choices
+    question.choices.each do |choice|
+      puts choice.name
+    end
+  elsif choice == 'no'
+    survey_menu
+  end
 end
 
 
