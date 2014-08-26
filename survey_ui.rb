@@ -163,5 +163,25 @@ def view_survey
   end
 end
 
+def take_survey
+  surveys = Survey.all
+  surveys.each {|survey| puts survey.name}
+  puts "What survey would you like to take??"
+  survey_choice = gets.chomp
+  selected_survey = Survey.where({:name => survey_choice}).first
+  selected_survey.questions.each do |question|
+    puts question.name
+    choices = Choice.where({:question_id => question.id}).first
+    choices.each_with_index do |choice, index|
+      puts "#{index +1}. #{choice.name}"
+    end
+    puts "Enter the number of your choice:"
+    choice = gets.chomp.to_i
+    result = choices.all[choice-1]
+    new_response = Response.create({:choice_id =>result.id, :question_id => question.id})
+  end
+  puts "Survey has been completed!!! Thank you!!"
+  welcome
+end
 
 welcome
